@@ -11,6 +11,7 @@
     <modules>
         <module>location-query-service</module>
         <module>location-service</module>
+        <module>discovery-server</module>
     </modules>
 
     <properties>
