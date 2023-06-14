@@ -40,6 +40,7 @@ public class GoogleMapsService {
         NearbySearchRequest req = PlacesApi.nearbySearchQuery(context, location)
                 .radius(radius)
                 .type(PlaceType.RESTAURANT);
+        //Restorandan başka yer arama özellikleri de eklenecek
         PlacesSearchResponse placesSearchResponse = req.await();
         return Arrays.asList(placesSearchResponse.results);
     }

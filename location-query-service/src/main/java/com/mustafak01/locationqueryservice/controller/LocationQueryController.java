@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/api/external-location-service")
+@RequestMapping("/api/location-query-service")
 @RequiredArgsConstructor
-public class ExternalLocationController {
+public class LocationQueryController {
 
     private final GoogleMapsService googleMapsService;
 
