@@ -6,9 +6,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/internal-location-service")
+@RequestMapping("/api/location-service")
 @RequiredArgsConstructor
-public class TestGateway {
+public class LocationService {
 
     @GetMapping("/test")
     public String test(){
