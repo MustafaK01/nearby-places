@@ -25,7 +25,7 @@ public class GoogleMapsService {
     }
 
     public PlacesDtoAndQueriedPlace getPlacesAndQueriedPlace(double latitude, double longitude, int radius) throws IOException, InterruptedException, ApiException {
-        QueriedPlaceDto queriedPlace = convertQueriedPlaceToDto(latitude, longitude);
+        QueriedPlaceDto queriedPlace = getQueriedPlace(latitude, longitude);
         List<PlaceDto> nearbyPlaces = getNearByPlaces(latitude, longitude, radius);
         return new PlacesDtoAndQueriedPlace(queriedPlace, nearbyPlaces);
     }
@@ -69,7 +69,7 @@ public class GoogleMapsService {
                 .collect(Collectors.toList());
     }
 
-    private QueriedPlaceDto convertQueriedPlaceToDto(double latitude, double longitude) throws ApiException, InterruptedException, IOException {
+    public QueriedPlaceDto getQueriedPlace(double latitude, double longitude) throws ApiException, InterruptedException, IOException {
         PlaceDetails placeDetails = findPlaceByCoordinates(latitude, longitude);
         return QueriedPlaceDto.builder()
                 .name(placeDetails.name)
