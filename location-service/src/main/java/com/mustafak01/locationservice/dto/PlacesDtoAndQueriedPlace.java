@@ -1,4 +1,4 @@
-package com.mustafak01.locationqueryservice.dto;
+package com.mustafak01.locationservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

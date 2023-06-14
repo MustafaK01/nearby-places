@@ -1,23 +1,25 @@
-package com.mustafak01.locationqueryservice.dto;
+package com.mustafak01.locationservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PlaceDto {
+public class QueriedPlaceDto {
 
-    private String placeId;
     private String name;
+    private String placeId;
+    private String address;
     private double latitude;
     private double longitude;
-    private double rating;
     private String vicinity;
-    private String[] types;
+    private List<String> types;
+    private String url;
 
 }
-

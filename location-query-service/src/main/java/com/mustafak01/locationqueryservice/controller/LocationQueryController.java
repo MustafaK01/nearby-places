@@ -2,6 +2,7 @@ package com.mustafak01.locationqueryservice.controller;
 
 import com.google.maps.errors.ApiException;
 import com.mustafak01.locationqueryservice.dto.PlacesDtoAndQueriedPlace;
+import com.mustafak01.locationqueryservice.dto.QueriedPlaceDto;
 import com.mustafak01.locationqueryservice.service.GoogleMapsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,5 +27,13 @@ public class LocationQueryController {
             @RequestParam("radius") int radius) throws IOException, InterruptedException, ApiException {
         return this.googleMapsService.getPlacesAndQueriedPlace(latitude,longitude,radius);
     }
+
+    @GetMapping("/getQueriedPlaceData")
+    public QueriedPlaceDto getQueriedPlaceData(
+            @RequestParam("latitude") double latitude,
+            @RequestParam("longitude") double longitude) throws IOException, InterruptedException, ApiException {
+        return this.googleMapsService.getQueriedPlace(latitude,longitude);
+    }
+
 
 }
