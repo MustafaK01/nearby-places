@@ -24,7 +24,7 @@ public class Distance {
     private QueriedPlace queriedPlace;
 
     @DBRef
-    private List<NearbyPlace> nearbyPlace;
+    private NearbyPlace nearbyPlace;
 
     private double distance;
 
