@@ -1,13 +1,11 @@
 package com.mustafak01.locationservice.controller;
 
-import com.mustafak01.locationservice.dto.PlacesDtoAndQueriedPlace;
+import com.mustafak01.locationservice.dto.PlacesDtoAndQueriedPlaceDto;
 import com.mustafak01.locationservice.dto.QueriedPlaceDto;
 import com.mustafak01.locationservice.service.LocationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
-import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/location-service")
@@ -23,11 +21,11 @@ public class LocationController {
 
     @GetMapping("/getNearbyPlaces")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public PlacesDtoAndQueriedPlace findNearbyPlaces(
+    public PlacesDtoAndQueriedPlaceDto findNearbyPlaces(
             @RequestParam("latitude") double latitude,
             @RequestParam("longitude") double longitude,
             @RequestParam("radius") int radius) {
-        return null;
+        return this.locationService.getPlaceWithNearbyPlaces(latitude,longitude,radius);
     }
 
     @GetMapping("/getPlaceByLocation")
