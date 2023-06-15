@@ -9,6 +9,7 @@ import com.mustafak01.locationqueryservice.dto.QueriedPlaceDto;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +28,12 @@ public class GoogleMapsService {
     public PlacesDtoAndQueriedPlace getPlacesAndQueriedPlace(double latitude, double longitude, int radius) throws IOException, InterruptedException, ApiException {
         QueriedPlaceDto queriedPlace = getQueriedPlace(latitude, longitude);
         List<PlaceDto> nearbyPlaces = getNearByPlaces(latitude, longitude, radius);
-        return new PlacesDtoAndQueriedPlace(queriedPlace, nearbyPlaces);
+        List<PlaceDto> places = new ArrayList<>();
+        for (PlaceDto place:nearbyPlaces) {
+            double distance = calcDistance(place.getLatitude(), place.getLongitude(), latitude , longitude);
+            if (distance<=radius) places.add(place);
+        }
+        return new PlacesDtoAndQueriedPlace(queriedPlace, places);
     }
 
     public List<PlaceDto> getNearByPlaces(double latitude, double longitude, int radius) throws IOException, InterruptedException, ApiException {
@@ -37,12 +43,20 @@ public class GoogleMapsService {
     public List<PlacesSearchResult> findNearbyPlaces(double latitude, double longitude, int radius)
             throws ApiException, InterruptedException, IOException {
         LatLng location = new LatLng(latitude, longitude);
-        NearbySearchRequest req = PlacesApi.nearbySearchQuery(context, location)
-                .radius(radius)
-                .type(PlaceType.RESTAURANT);
-        //Restorandan başka yer arama özellikleri de eklenecek
-        PlacesSearchResponse placesSearchResponse = req.await();
-        return Arrays.asList(placesSearchResponse.results);
+        NearbySearchRequest request = PlacesApi.nearbySearchQuery(context, location).radius(radius);
+        PlacesSearchResponse placesSearchResponse = request.await();
+        List<PlacesSearchResult> results = new ArrayList<>(Arrays.asList(placesSearchResponse.results));
+        String nextPageToken = placesSearchResponse.nextPageToken;
+
+        while (nextPageToken!=null) {
+            Thread.sleep(2000);
+            request=PlacesApi.nearbySearchQuery(context, location).radius(radius).pageToken(nextPageToken);
+            placesSearchResponse=request.await();
+            results.addAll(Arrays.asList(placesSearchResponse.results));
+            nextPageToken=placesSearchResponse.nextPageToken;
+        }
+
+        return results;
     }
 
     public PlaceDetails findPlaceByCoordinates(double latitude, double longitude) throws ApiException, InterruptedException, IOException {
@@ -81,6 +95,17 @@ public class GoogleMapsService {
                 .types(List.of(Arrays.toString(placeDetails.types)))
                 .url(String.valueOf(placeDetails.url))
                 .build();
+    }
+
+    public double calcDistance(double lat1, double lon1, double lat2, double lon2) {
+        double earthRad = 6371;
+        double dLatitude = Math.toRadians(lat2 - lat1);
+        double dLongitude = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(dLatitude / 2) * Math.sin(dLatitude / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLongitude / 2) * Math.sin(dLongitude / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return earthRad * c * 1000;
     }
 
 }
