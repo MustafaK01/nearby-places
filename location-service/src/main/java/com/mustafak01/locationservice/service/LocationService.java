@@ -56,7 +56,7 @@ public class LocationService {
             return placesAndNearByPlaces;
         }
         this.saveNewPlaces(queriedPlaceDto,nearByPlaces);
-        return this.resultForNewPlaces(queriedPlace.get());
+        return this.resultForNewPlaces(queriedPlace.get(),radius);
     }
 
     private void saveNewPlaces(QueriedPlaceDto queriedPlaceDto, List<PlaceDto> placeDtoList){
@@ -69,20 +69,18 @@ public class LocationService {
             double distanceBetweenPlaces = this.calcDistance(
                     queriedPlace.getLatitude(),queriedPlace.getLongitude()
                     ,nearByPlace.getLatitude(),nearByPlace.getLongitude());
-            if(distanceBetweenPlaces>furthestPlace){
-                filteredNearbyPlaces.add(nearByPlace);
-            }
+            if(distanceBetweenPlaces>furthestPlace) filteredNearbyPlaces.add(nearByPlace);
         }
         if (filteredNearbyPlaces.size()==0) return;
         this.nearbyPlaceRepository.saveAll(filteredNearbyPlaces);
         this.distanceRepository.saveAll(this.getDistances(queriedPlace,filteredNearbyPlaces));
     }
 
-    private PlacesDtoAndQueriedPlaceDto resultForNewPlaces(QueriedPlace queriedPlace){
+    private PlacesDtoAndQueriedPlaceDto resultForNewPlaces(QueriedPlace queriedPlace,double radius){
         List<Distance> distances = this.distanceRepository.findAllByQueriedPlace(queriedPlace);
         List<NearbyPlace> nearbyPlaces = new ArrayList<>();
         for (Distance distance:distances) {
-            nearbyPlaces.add(distance.getNearbyPlace());
+            if (distance.getDistance()<=radius) nearbyPlaces.add(distance.getNearbyPlace());
         }
         return new PlacesDtoAndQueriedPlaceDto(this.queriedPlaceDtoConverter.convertToDto(queriedPlace)
         ,this.placeDtoConverter.convertToDtoList(nearbyPlaces));
