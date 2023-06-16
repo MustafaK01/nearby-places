@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/location-service")
 @RequiredArgsConstructor
+@CrossOrigin
 public class LocationController {
 
     private final LocationService locationService;
