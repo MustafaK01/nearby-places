@@ -6,6 +6,7 @@ import com.mustafak01.locationservice.dto.QueriedPlaceDto;
 import com.mustafak01.locationservice.dto.converter.PlaceDtoConverter;
 import com.mustafak01.locationservice.dto.converter.QueriedPlaceDtoConverter;
 import com.mustafak01.locationservice.exception.CouldNotFoundException;
+import com.mustafak01.locationservice.exception.MissingDataException;
 import com.mustafak01.locationservice.model.Distance;
 import com.mustafak01.locationservice.model.NearbyPlace;
 import com.mustafak01.locationservice.model.QueriedPlace;
@@ -37,11 +38,9 @@ public class LocationService {
         return this.getQueriedPlace(latitude,longitude);
     }
 
-    // TODO: 15.06.2023
-    // Simplify the functions
-    // validate returning data
 
     public PlacesDtoAndQueriedPlaceDto getPlaceWithNearbyPlaces(double latitude , double longitude, int radius){
+        if(latitude==0 && longitude==0 || radius<=0) throw new MissingDataException();
         PlacesDtoAndQueriedPlaceDto placesAndNearByPlaces = this.getPlaceAndNearbyPlaces(latitude, longitude, radius);
         QueriedPlaceDto queriedPlaceDto=placesAndNearByPlaces.getQueriedPlace();
         List<PlaceDto> nearByPlaces = placesAndNearByPlaces.getNearbyPlaces();
