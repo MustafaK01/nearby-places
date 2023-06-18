@@ -82,7 +82,7 @@ public class LocationService {
             if (distance.getDistance()<=radius) nearbyPlaces.add(distance.getNearbyPlace());
         }
         return new PlacesDtoAndQueriedPlaceDto(this.queriedPlaceDtoConverter.convertToDto(queriedPlace)
-        ,this.placeDtoConverter.convertToDtoList(nearbyPlaces));
+        ,this.placeDtoConverter.convertToDtoList(nearbyPlaces),"Success");
     }
 
     private List<Distance> getDistances(QueriedPlace queriedPlace, List<NearbyPlace> nearbyPlaces){

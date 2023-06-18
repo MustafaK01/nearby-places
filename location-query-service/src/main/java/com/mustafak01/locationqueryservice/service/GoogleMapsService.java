@@ -6,6 +6,8 @@ import com.google.maps.model.*;
 import com.mustafak01.locationqueryservice.dto.PlaceDto;
 import com.mustafak01.locationqueryservice.dto.PlacesDtoAndQueriedPlace;
 import com.mustafak01.locationqueryservice.dto.QueriedPlaceDto;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class GoogleMapsService {
 
     private static final String API_KEY = "Put your api key here";
@@ -25,6 +28,7 @@ public class GoogleMapsService {
         this.context = new GeoApiContext.Builder().apiKey(API_KEY).build();
     }
 
+    @SneakyThrows
     public PlacesDtoAndQueriedPlace getPlacesAndQueriedPlace(double latitude, double longitude, int radius) throws IOException, InterruptedException, ApiException {
         QueriedPlaceDto queriedPlace = getQueriedPlace(latitude, longitude);
         List<PlaceDto> nearbyPlaces = getNearByPlaces(latitude, longitude, radius);
@@ -33,7 +37,7 @@ public class GoogleMapsService {
             double distance = calcDistance(place.getLatitude(), place.getLongitude(), latitude , longitude);
             if (distance<=radius) places.add(place);
         }
-        return new PlacesDtoAndQueriedPlace(queriedPlace, places);
+        return new PlacesDtoAndQueriedPlace("Success", queriedPlace,places);
     }
 
     public List<PlaceDto> getNearByPlaces(double latitude, double longitude, int radius) throws IOException, InterruptedException, ApiException {
