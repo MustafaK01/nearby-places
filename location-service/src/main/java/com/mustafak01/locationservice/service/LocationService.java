@@ -40,7 +40,7 @@ public class LocationService {
 
 
     public PlacesDtoAndQueriedPlaceDto getPlaceWithNearbyPlaces(double latitude , double longitude, int radius){
-        if(latitude==0 && longitude==0 || radius<=0) throw new MissingDataException();
+        if(latitude==0 && longitude==0 || radius<=0 || radius>20000) throw new MissingDataException();
         PlacesDtoAndQueriedPlaceDto placesAndNearByPlaces = this.getPlaceAndNearbyPlaces(latitude, longitude, radius);
         QueriedPlaceDto queriedPlaceDto=placesAndNearByPlaces.getQueriedPlace();
         List<PlaceDto> nearByPlaces = placesAndNearByPlaces.getNearbyPlaces();
