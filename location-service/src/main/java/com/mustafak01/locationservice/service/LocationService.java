@@ -14,6 +14,8 @@ import com.mustafak01.locationservice.repository.DistanceRepository;
 import com.mustafak01.locationservice.repository.NearbyPlaceRepository;
 import com.mustafak01.locationservice.repository.QueriedPlaceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.sleuth.Span;
+import org.springframework.cloud.sleuth.Tracer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,6 +35,7 @@ public class LocationService {
     private final DistanceRepository distanceRepository;
     private final PlaceDtoConverter placeDtoConverter;
     private final QueriedPlaceDtoConverter queriedPlaceDtoConverter;
+    private final Tracer tracer;
 
     public QueriedPlaceDto getPlaceByLocation(double latitude , double longitude){
         return this.getQueriedPlace(latitude,longitude);
@@ -140,15 +143,21 @@ public class LocationService {
     }
 
     private PlacesDtoAndQueriedPlaceDto getPlaceAndNearbyPlaces(double latitude , double longitude, int radius){
-        PlacesDtoAndQueriedPlaceDto nearbyPlacesAndQueriedPlace = webClientBuilder.build().get().uri("http://location-query-service/api/location-query-service/findNearbyPlaces"
-                        ,uriBuilder -> uriBuilder.queryParam("latitude",latitude)
-                                .queryParam("longitude",longitude)
-                                .queryParam("radius",radius)
-                                .build())
-                .retrieve().bodyToMono(PlacesDtoAndQueriedPlaceDto.class)
-                .block();
-        if(nearbyPlacesAndQueriedPlace!=null) return nearbyPlacesAndQueriedPlace;
-        else throw new CouldNotFoundException();
+        Span queryNearbyPlacesLookup = tracer.nextSpan().name("QueryNearbyPlacesLookup");
+
+        try(Tracer.SpanInScope spanInScope = tracer.withSpan(queryNearbyPlacesLookup.start())){
+            PlacesDtoAndQueriedPlaceDto nearbyPlacesAndQueriedPlace = webClientBuilder.build().get().uri("http://location-query-service/api/location-query-service/findNearbyPlaces"
+                            ,uriBuilder -> uriBuilder.queryParam("latitude",latitude)
+                                    .queryParam("longitude",longitude)
+                                    .queryParam("radius",radius)
+                                    .build())
+                    .retrieve().bodyToMono(PlacesDtoAndQueriedPlaceDto.class)
+                    .block();
+            if(nearbyPlacesAndQueriedPlace!=null) return nearbyPlacesAndQueriedPlace;
+            else throw new CouldNotFoundException();
+        }finally {
+            queryNearbyPlacesLookup.end();
+        }
     }
 
 }
